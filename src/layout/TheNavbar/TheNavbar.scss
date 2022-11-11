@@ -1,0 +1,32 @@
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4.5rem;
+    padding: 10px;
+    border-bottom: 1px solid #e7e0e0;
+
+    .logo {
+        width: 70px;
+    }
+}
+
+.organiztion-container {
+    display: flex;
+    gap: 30px;
+    list-style-type: none;
+}
+
+.organization {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: transform .3s ease;
+    margin-right: 12px;
+
+    &:hover {
+        transform: scale(1.3);
+    }
+   
+}
