@@ -1,52 +1,82 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
+import BaseSelect from "@/components/BaseSelect/BaseSelect";
 import EmployeeForm from "@/components/EmployeeForm/EmployeeForm";
 import EmployeeTable from "@/components/EmployeeTable/EmployeeTable";
 import { departmentService } from "@/services/departmentService";
 import { employeeService } from "@/services/employeeService";
-import { Employee, EmployeeFormData } from "@/types";
-import { toast } from "react-toastify";
+import { EmployeeFormData, EmployeesByDepartments, Option } from "@/types";
 
 interface Props {
   organizationId: string;
 }
 
 function EmployeePage({ organizationId }: Props) {
-  const [employees, setEmployees] = React.useState<Employee[]>([]);
+  const navigate = useNavigate();
+  const [employeesByDepartment, setEmployeesByDepartments] = React.useState<
+    EmployeesByDepartments[]
+  >([]);
 
+  const [filteredDepartments, setFilteredDepartments] = React.useState<
+    Option[]
+  >([]);
+
+  const [selectedFilterDepartmentId, setSelectedFilterDepartmentId] =
+    React.useState("");
   React.useEffect(() => {
-    const employees: Employee[] =
+    const employees: EmployeesByDepartments[] =
       employeeService.getEmployeesByOrganiztionId(organizationId);
-    setEmployees(employees);
-  }, [organizationId]);
+
+    if (!employees.length) return navigate("/");
+    setEmployeesByDepartments(employees);
+    const departmentsFilter = employeeService.getDepartmentsFilter();
+
+    setFilteredDepartments(departmentsFilter);
+  }, [navigate, organizationId]);
+
+  const filteredEmployees = React.useMemo(() => {
+    if (selectedFilterDepartmentId === "allId" || !selectedFilterDepartmentId)
+      return employeesByDepartment;
+    return employeesByDepartment.filter(
+      employeeDepartment =>
+        employeeDepartment.departmentId === selectedFilterDepartmentId
+    );
+  }, [employeesByDepartment, selectedFilterDepartmentId]);
 
   const departmentsOptions = departmentService
     .getDepartmentsById(organizationId)
     .map(department => ({ key: department.id, value: department.name }));
 
   const onDeleteEmployee = (id: string) => {
-    const filteredEmployees = employees.filter(employee => employee.id !== id);
-    setEmployees(filteredEmployees);
-    employeeService.deleteEmployee(id);
+    const updatedEmployeesByDepartments = employeeService.deleteEmployee(id);
+    setEmployeesByDepartments(updatedEmployeesByDepartments);
     toast(`Employee with id: ${id} has been deleted!`);
   };
 
   const onCreateEmployee = (formData: EmployeeFormData) => {
-    const { selectedDepartment: _selectedDepartment, ...rest } = formData;
-    setEmployees(prevEmployees => [...prevEmployees, rest]);
-    departmentService.addEmployeeToDepartment(formData);
+    const updatedEmployeesByDepartment =
+      departmentService.addEmployeeToDepartment(formData);
+    setEmployeesByDepartments(updatedEmployeesByDepartment);
     toast(`Employee with the name ${formData.name} has been created!`);
   };
 
   return (
     <div>
+      <BaseSelect
+        label="Filter Employee By Department"
+        options={filteredDepartments}
+        value={selectedFilterDepartmentId}
+        onHandleSelect={setSelectedFilterDepartmentId}
+      />
       <EmployeeForm
         departmentsOptions={departmentsOptions}
         onCreateEmployee={onCreateEmployee}
       />
-      {employees.length > 0 ? (
+      {employeesByDepartment.length > 0 ? (
         <EmployeeTable
-          employees={employees}
+          emplyoeesOfDep={filteredEmployees}
           onDeleteEmployee={onDeleteEmployee}
         />
       ) : (

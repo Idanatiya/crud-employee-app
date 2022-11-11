@@ -28,6 +28,12 @@ export interface Option {
 
 export interface EmployeeFormData {
   name: string;
-  selectedDepartment: string;
+  selectedDepartmentId: string;
   id: string;
+}
+
+export interface EmployeesByDepartments {
+  name: string;
+  departmentId: string;
+  employees: Employee[];
 }

@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import BasicSelect from "@/components/BaseSelect/BaseSelect";
+import BaseSelect from "@/components/BaseSelect/BaseSelect";
 import useToggle from "@/hooks/useToggle";
 import { EmployeeFormData, Option } from "@/types";
 
@@ -29,7 +29,7 @@ const EmployeeForm = ({ onCreateEmployee, departmentsOptions }: Props) => {
   const onHandleSubmit = () => {
     onCreateEmployee({
       name,
-      selectedDepartment,
+      selectedDepartmentId: selectedDepartment,
       id: uuidv4()
     });
     resetForm();
@@ -54,7 +54,7 @@ const EmployeeForm = ({ onCreateEmployee, departmentsOptions }: Props) => {
             variant="standard"
             onChange={ev => setName(ev.target.value)}
           />
-          <BasicSelect
+          <BaseSelect
             value={selectedDepartment}
             options={departmentsOptions}
             label="Department"

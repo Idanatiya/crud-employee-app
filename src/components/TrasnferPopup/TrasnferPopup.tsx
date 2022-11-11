@@ -23,7 +23,7 @@ const TrasnferPopup = ({
   onDeleteEmployees,
   onTransferEmployees
 }: Props) => {
-  const [departmentId, setDepartmentId] = React.useState("");
+  const [selectedDepartmentId, setSelectedDepartmentId] = React.useState("");
   const options: Option[] = departments.map(({ id, name }) => ({
     key: id,
     value: name
@@ -40,15 +40,15 @@ const TrasnferPopup = ({
         <BaseSelect
           options={options}
           label="Department"
-          value={departmentId}
-          onHandleSelect={setDepartmentId}
+          value={selectedDepartmentId}
+          onHandleSelect={setSelectedDepartmentId}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={toggleTransferPopup}>Cancel</Button>
         <Button
-          disabled={!departmentId}
-          onClick={() => onTransferEmployees(departmentId)}
+          disabled={!selectedDepartmentId}
+          onClick={() => onTransferEmployees(selectedDepartmentId)}
         >
           Transfer Employees
         </Button>

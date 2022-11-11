@@ -18,14 +18,14 @@ function DepartmentPage({ organizationId }: Props) {
   const [departments, setDepartments] = React.useState<Department[]>([]);
   const [isConfirmPopupOpen, togglePopup] = useToggle();
   const [isTransferPopupOpen, toggleTransferPopup] = useToggle();
-  const [departmentId, setDepartmentId] = React.useState("");
+  const [selectedDepartmentId, setSelectedDepartmentId] = React.useState("");
 
   React.useEffect(() => {
     const departments = departmentService.getDepartmentsById(organizationId);
     setDepartments(departments);
   }, [organizationId]);
 
-  const onHandleDelete = (id: string) => {
+  const setVisiblePopup = (id: string) => {
     const selectedDepartment = departments.find(
       department => department.id === id
     );
@@ -39,16 +39,16 @@ function DepartmentPage({ organizationId }: Props) {
 
   const onHandleConfirm = () => {
     setDepartments(prev =>
-      prev.filter(department => department.id !== departmentId)
+      prev.filter(department => department.id !== selectedDepartmentId)
     );
-    departmentService.removeDepartmentById(departmentId);
+    departmentService.removeDepartmentById(selectedDepartmentId);
     togglePopup();
     toast("Department has been deleted!");
   };
 
-  const onOpenPopup = (id: string) => {
-    setDepartmentId(id);
-    onHandleDelete(id);
+  const onOpenPopup = (selectedDepartmentId: string) => {
+    setSelectedDepartmentId(selectedDepartmentId);
+    setVisiblePopup(selectedDepartmentId);
   };
 
   const onAddDepartment = (departmentName: string) => {
@@ -63,13 +63,16 @@ function DepartmentPage({ organizationId }: Props) {
     toast(`Department with the name ${departmentName} has been added!`);
   };
   const onHandleDeleteEmployees = () => {
-    departmentService.deleteDepartmentEmployees(departmentId);
+    departmentService.deleteDepartmentEmployees(selectedDepartmentId);
     toggleTransferPopup();
     toast(`All Employees have been deleted!`);
   };
 
   const onHandleTransferEmployees = (departmentToTransferId: string) => {
-    departmentService.transferEmployees(departmentToTransferId, departmentId);
+    departmentService.transferEmployees(
+      selectedDepartmentId,
+      departmentToTransferId
+    );
     toggleTransferPopup();
     toast(`Employees Transfered Sucessfully`);
   };

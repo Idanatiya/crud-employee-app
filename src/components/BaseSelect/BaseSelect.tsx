@@ -13,7 +13,7 @@ interface Props {
   onHandleSelect: (id: string) => void;
 }
 
-export default function BasicSelect({
+export default function BaseSelect({
   options,
   label,
   onHandleSelect,

@@ -48,55 +48,56 @@ function deleteDepartmentEmployees(departmentId: string) {
     department => department.id === departmentId
   );
   departmentsDB[idx].employees.length = 0;
+  employeeService.saveEmployee(departmentId, departmentsDB[idx].employees);
   storageService.saveToStorage(DEPARTMENTS_DB_STORAGE_KEY, departmentsDB);
 }
 
 function transferEmployees(
-  departmentToTransferId: string,
-  currDepartmentId: string
+  selectedDepartmentId: string,
+  departmentToTransferId: string
 ) {
   const departmentsDB: Department[] = storageService.loadFromStorage(
     DEPARTMENTS_DB_STORAGE_KEY
   );
 
-  const currSelectedDepartmentIdx = departmentsDB.findIndex(
-    department => department.id === currDepartmentId
+  const selectedDepartmentIdx = departmentsDB.findIndex(
+    department => department.id === selectedDepartmentId
   );
-  const employeesToTransfer =
-    departmentsDB[currSelectedDepartmentIdx].employees;
-
-  if (currSelectedDepartmentIdx !== -1) {
-    departmentsDB[currSelectedDepartmentIdx].employees = [];
-  }
-
-  const departmentTransferIdx = departmentsDB.findIndex(
+  const toTransferDepartmentIdx = departmentsDB.findIndex(
     department => department.id === departmentToTransferId
   );
-  departmentsDB[departmentTransferIdx] = {
-    ...departmentsDB[departmentTransferIdx],
-    employees: [
-      ...departmentsDB[departmentTransferIdx].employees,
-      ...employeesToTransfer
-    ]
-  };
+
+  const employeesToTransfer = departmentsDB[selectedDepartmentIdx].employees;
+
+  departmentsDB[toTransferDepartmentIdx].employees = [
+    ...departmentsDB[toTransferDepartmentIdx].employees,
+    ...employeesToTransfer
+  ];
+
+  departmentsDB[selectedDepartmentIdx].employees.length = 0;
+  const organizationId = storageService.loadFromStorage("organizationId");
+  getDepartmentsById(organizationId);
 
   storageService.saveToStorage(DEPARTMENTS_DB_STORAGE_KEY, departmentsDB);
 }
 
 function addEmployeeToDepartment(formData: EmployeeFormData) {
-  const { selectedDepartment, ...employee } = formData;
+  const { selectedDepartmentId, ...employee } = formData;
   const departmentsDB: Department[] = storageService.loadFromStorage(
     DEPARTMENTS_DB_STORAGE_KEY
   );
-  const idx = departmentsDB.findIndex(
-    department => department.id === selectedDepartment
+
+  const selectedDepartmentIdx = departmentsDB.findIndex(
+    department => department.id === selectedDepartmentId
   );
-  departmentsDB[idx] = {
-    ...departmentsDB[idx],
-    employees: [...departmentsDB[idx].employees, employee]
+  departmentsDB[selectedDepartmentIdx] = {
+    ...departmentsDB[selectedDepartmentIdx],
+    employees: [...departmentsDB[selectedDepartmentIdx].employees, employee]
   };
-  employeeService.saveEmployee(employee);
+
+  const { id: departmentId, employees } = departmentsDB[selectedDepartmentIdx];
   storageService.saveToStorage(DEPARTMENTS_DB_STORAGE_KEY, departmentsDB);
+  return employeeService.saveEmployee(departmentId, employees);
 }
 
 export const departmentService = {
