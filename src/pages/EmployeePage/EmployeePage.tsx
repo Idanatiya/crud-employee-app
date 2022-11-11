@@ -1,9 +1,11 @@
+import * as React from "react";
+
+import EmployeeForm from "@/components/EmployeeForm/EmployeeForm";
 import EmployeeTable from "@/components/EmployeeTable/EmployeeTable";
+import { departmentService } from "@/services/departmentService";
 import { employeeService } from "@/services/employeeService";
 import { Employee, EmployeeFormData } from "@/types";
-import * as React from "react";
-import EmployeeForm from "@/components/EmployeeForm/EmployeeForm";
-import { departmentService } from "@/services/departmentService";
+import { toast } from "react-toastify";
 
 interface Props {
   organizationId: string;
@@ -11,47 +13,45 @@ interface Props {
 
 function EmployeePage({ organizationId }: Props) {
   const [employees, setEmployees] = React.useState<Employee[]>([]);
-  React.useEffect(() => {
-    const data: Employee[] =
-      employeeService.getEmployeesByOrganizationId(organizationId);
-    console.log({ data });
 
-    setEmployees(data);
+  React.useEffect(() => {
+    const employees: Employee[] =
+      employeeService.getEmployeesByOrganiztionId(organizationId);
+    setEmployees(employees);
   }, [organizationId]);
 
-  const departments = departmentService
+  const departmentsOptions = departmentService
     .getDepartmentsById(organizationId)
     .map(department => ({ key: department.id, value: department.name }));
-  console.log({ departments });
 
   const onDeleteEmployee = (id: string) => {
     const filteredEmployees = employees.filter(employee => employee.id !== id);
     setEmployees(filteredEmployees);
+    employeeService.deleteEmployee(id);
+    toast(`Employee with id: ${id} has been deleted!`);
   };
 
   const onCreateEmployee = (formData: EmployeeFormData) => {
-    const newEmployee: Employee = {
-      id: Math.random().toString(),
-      name: formData.name
-    };
-    setEmployees(prevEmployees => [...prevEmployees, newEmployee]);
-    // departmentService.addEmployeeToDepartment(
-    //   newEmployee,
-    //   formData.selectedDepartment
-    //   organizationId
-    // );
+    const { selectedDepartment: _selectedDepartment, ...rest } = formData;
+    setEmployees(prevEmployees => [...prevEmployees, rest]);
+    departmentService.addEmployeeToDepartment(formData);
+    toast(`Employee with the name ${formData.name} has been created!`);
   };
 
   return (
     <div>
       <EmployeeForm
-        departments={departments}
+        departmentsOptions={departmentsOptions}
         onCreateEmployee={onCreateEmployee}
       />
-      <EmployeeTable
-        employees={employees}
-        onDeleteEmployee={onDeleteEmployee}
-      />
+      {employees.length > 0 ? (
+        <EmployeeTable
+          employees={employees}
+          onDeleteEmployee={onDeleteEmployee}
+        />
+      ) : (
+        <div>No Employees</div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 
 import useToggle from "@/hooks/useToggle";
+
 interface Props {
   onAddDepartment: (name: string) => void;
 }
@@ -42,7 +43,9 @@ export default function DepartmentForm({ onAddDepartment }: Props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={toggleDialog}>Cancel</Button>
-          <Button onClick={addDepartment}>Add Dapertment</Button>
+          <Button disabled={!name} onClick={addDepartment}>
+            Add Dapertment
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

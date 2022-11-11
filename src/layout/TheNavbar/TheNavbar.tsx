@@ -1,28 +1,25 @@
 import "./TheNavbar.scss";
 
-import React from "react";
-
-import { Organization } from "@/types";
 import logo from "@/assets/logo.png";
+import { ORGANIZATION_NAV_LINKS } from "@/constants";
 
 interface Props {
-  organizations: Organization[];
   setOrganization: (id: string) => void;
 }
 
-function TheNavbar({ organizations, setOrganization }: Props) {
+function TheNavbar({ setOrganization }: Props) {
   return (
     <header className="header-container">
       <img className="logo" src={logo} alt="logo" />
       <nav>
         <ul className="organiztion-container">
-          {organizations.map(organiztion => (
+          {ORGANIZATION_NAV_LINKS.map(({ id, name }) => (
             <li
-              key={organiztion.id}
+              key={id}
               className="organization"
-              onClick={() => setOrganization(organiztion.id)}
+              onClick={() => setOrganization(id)}
             >
-              {organiztion.name}
+              {name}
             </li>
           ))}
         </ul>

@@ -1,14 +1,14 @@
-import { TableCell, TableRow } from "@mui/material";
+import { Button, TableCell, TableRow } from "@mui/material";
 
 import BaseTable from "@/components/BaseTable/BaseTable";
 import { Department } from "@/types";
 
 interface Props {
   departments: Department[];
-  onOpenPopup: (id: string) => void;
+  onHandleDelete: (id: string) => void;
 }
 
-const DepartmentTable = ({ departments, onOpenPopup }: Props) => {
+const DepartmentTable = ({ departments, onHandleDelete }: Props) => {
   return (
     <BaseTable headers={["Department", "Id", "Action"]}>
       {departments.map(({ id, name }) => (
@@ -16,7 +16,9 @@ const DepartmentTable = ({ departments, onOpenPopup }: Props) => {
           <TableCell>{name}</TableCell>
           <TableCell>{id}</TableCell>
           <TableCell>
-            <button onClick={() => onOpenPopup(id)}>Delete Department</button>
+            <Button variant="outlined" onClick={() => onHandleDelete(id)}>
+              Delete Department
+            </Button>
           </TableCell>
         </TableRow>
       ))}

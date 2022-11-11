@@ -1,153 +1,111 @@
-import { OrganizationData } from "@/types";
+import DepartmentPage from "@/pages/DepartmentPage/DepartmentPage";
+import EmployeePage from "@/pages/EmployeePage/EmployeePage";
+import { Department } from "@/types";
+import { v4 as uuidv4 } from "uuid";
 
-export const mock: OrganizationData[] = [
+export const defaultOrganizationId = "5d366f1a-6161-4144-85e0-15f67fd74211";
+
+export const DEPARTMENTS_DB_STORAGE_KEY = "departmentsDB";
+
+export const routes = [
+  { path: "/", element: DepartmentPage },
+  { path: "/employee", element: EmployeePage }
+];
+
+export const ORGANIZATION_NAV_LINKS = [
+  { id: "5d366f1a-6161-4144-85e0-15f67fd74211", name: "Google" },
+  { id: "4814b199-dfd8-4e41-aa12-30a4cf542bf6", name: "Microsoft" }
+];
+
+export const mockData: Department[] = [
   {
-    name: "Google",
-    id: "5d366f1a-6161-4144-85e0-15f67fd74211",
-    departments: [
+    organizationId: "5d366f1a-6161-4144-85e0-15f67fd74211",
+    id: uuidv4(),
+    name: "R&D",
+    employees: [
       {
-        id: "d366f1a-6161-4144-85e0",
-        name: "R&D",
-        employees: [
-          {
-            name: "Idan",
-            id: "#id789010"
-          },
-          {
-            name: "Mor",
-            id: "#id919192"
-          }
-        ]
+        name: "Idan",
+        id: uuidv4()
       },
       {
-        id: "d366f1a-6161-4144-8517",
-        name: "UX",
-        employees: [
-          {
-            name: "Moti",
-            id: "#id789076"
-          },
-          {
-            name: "LOLO",
-            id: "#id919184"
-          }
-        ]
+        name: "Mor",
+        id: uuidv4()
       }
     ]
   },
   {
-    name: "Microsoft",
-    id: "4814b199-dfd8-4e41-aa12-30a4cf542bf6",
-    departments: [
+    organizationId: "5d366f1a-6161-4144-85e0-15f67fd74211",
+    id: uuidv4(),
+    name: "Product",
+    employees: [
       {
-        id: "d366f1a-6161-4144-8123",
-        name: "R&D",
-        employees: [
-          {
-            name: "Linor",
-            id: "#id789098"
-          },
-          {
-            name: "Mor",
-            id: "#id919192"
-          }
-        ]
+        name: "Eldar",
+        id: uuidv4()
       },
       {
-        id: "d366f1a-6161-4144-887E",
-        name: "UX",
-        employees: [
-          {
-            name: "Moti",
-            id: "#id789023"
-          },
-          {
-            name: "LOLO",
-            id: "#id919124"
-          }
-        ]
+        name: "Michael",
+        id: uuidv4()
+      }
+    ]
+  },
+  {
+    organizationId: "4814b199-dfd8-4e41-aa12-30a4cf542bf6",
+    id: uuidv4(),
+    name: "UX",
+    employees: [
+      {
+        name: "Yedidya",
+        id: uuidv4()
+      },
+      {
+        name: "Bar",
+        id: uuidv4()
+      }
+    ]
+  },
+  {
+    organizationId: "5d366f1a-6161-4144-85e0-15f67fd74211",
+    id: uuidv4(),
+    name: "QA",
+    employees: [
+      {
+        name: "Gal",
+        id: uuidv4()
+      },
+      {
+        name: "Avi",
+        id: uuidv4()
+      }
+    ]
+  },
+  {
+    organizationId: "4814b199-dfd8-4e41-aa12-30a4cf542bf6",
+    id: uuidv4(),
+    name: "R&D",
+    employees: [
+      {
+        name: "Noam",
+        id: uuidv4()
+      },
+      {
+        name: "Galit",
+        id: uuidv4()
+      }
+    ]
+  },
+  {
+    organizationId: "4814b199-dfd8-4e41-aa12-30a4cf542bf6",
+    id: uuidv4(),
+    name: "UX",
+    employees: [
+      {
+        name: "Jack",
+        id: uuidv4()
+      },
+      {
+        name: "Julie",
+        id: uuidv4()
       }
     ]
   }
 ];
-
-// export const mockData: MockData = {
-//   organizations: [
-//     {
-//       name: "Google",
-//       id: "5d366f1a-6161-4144-85e0-15f67fd74211"
-//     },
-//     {
-//       name: "Microsoft",
-//       id: "4814b199-dfd8-4e41-aa12-30a4cf542bf6"
-//     }
-//   ],
-//   orgDepartments: {
-//     "5d366f1a-6161-4144-85e0-15f67fd74211": {
-//       orginizationId: "5d366f1a-6161-4144-85e0-15f67fd74211",
-//       departments: [
-//         {
-//           id: "d366f1a-6161-4144-85e0",
-//           name: "R&D",
-//           employees: [
-//             {
-//               name: "Idan",
-//               id: "#id789010"
-//             },
-//             {
-//               name: "Mor",
-//               id: "#id919192"
-//             }
-//           ]
-//         },
-//         {
-//           id: "d366f1a-6161-4144-8517",
-//           name: "UX",
-//           employees: [
-//             {
-//               name: "Moti",
-//               id: "#id789076"
-//             },
-//             {
-//               name: "LOLO",
-//               id: "#id919184"
-//             }
-//           ]
-//         }
-//       ]
-//     },
-//     ["4814b199-dfd8-4e41-aa12-30a4cf542bf6"]: {
-//       orginizationId: "4814b199-dfd8-4e41-aa12-30a4cf542bf6",
-//       departments: [
-//         {
-//           id: "d366f1a-6161-4144-8123",
-//           name: "R&D",
-//           employees: [
-//             {
-//               name: "Linor",
-//               id: "#id789098"
-//             },
-//             {
-//               name: "Mor",
-//               id: "#id919192"
-//             }
-//           ]
-//         },
-//         {
-//           id: "d366f1a-6161-4144-887E",
-//           name: "UX",
-//           employees: [
-//             {
-//               name: "Moti",
-//               id: "#id789023"
-//             },
-//             {
-//               name: "LOLO",
-//               id: "#id919124"
-//             }
-//           ]
-//         }
-//       ]
-//     }
-//   }
-// };

@@ -4,26 +4,35 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
-import { Option } from "@/types";
-import useToggle from "@/hooks/useToggle";
-import { EmployeeFormData } from "@/types";
+import { v4 as uuidv4 } from "uuid";
 
-import BasicSelect from "../BasicSelect/BasicSelect";
+import BasicSelect from "@/components/BaseSelect/BaseSelect";
+import useToggle from "@/hooks/useToggle";
+import { EmployeeFormData, Option } from "@/types";
 
 interface Props {
-  departments: Option[];
   onCreateEmployee: (formData: EmployeeFormData) => void;
+  departmentsOptions: Option[];
 }
 
-const EmployeeForm = ({ departments, onCreateEmployee }: Props) => {
+const EmployeeForm = ({ onCreateEmployee, departmentsOptions }: Props) => {
   const [open, toggleDialog] = useToggle();
   const [name, setName] = React.useState("");
   const [selectedDepartment, setSelectedDepartment] = React.useState("");
+  const isBtnDisabled = !name || !selectedDepartment;
 
-  console.log({ selectedDepartment });
+  const resetForm = () => {
+    setName("");
+    setSelectedDepartment("");
+  };
 
   const onHandleSubmit = () => {
-    onCreateEmployee({ name, selectedDepartment });
+    onCreateEmployee({
+      name,
+      selectedDepartment,
+      id: uuidv4()
+    });
+    resetForm();
     toggleDialog();
   };
 
@@ -47,14 +56,16 @@ const EmployeeForm = ({ departments, onCreateEmployee }: Props) => {
           />
           <BasicSelect
             value={selectedDepartment}
-            options={departments}
+            options={departmentsOptions}
             label="Department"
             onHandleSelect={setSelectedDepartment}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={toggleDialog}>Cancel</Button>
-          <Button onClick={onHandleSubmit}>Add Employee</Button>
+          <Button disabled={isBtnDisabled} onClick={onHandleSubmit}>
+            Add Employee
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

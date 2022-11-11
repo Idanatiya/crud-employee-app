@@ -1,12 +1,14 @@
 import * as React from "react";
+import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
+import ConfirmPopup from "@/components/DeletePopup/ConfirmPopup";
 import DepartmentForm from "@/components/DepartmentForm/DepartmentForm";
 import DepartmentTable from "@/components/DepartmentTable/DepartmentTable";
-import { departmentService } from "@/services/departmentService";
-import { storageService } from "@/services/storageService";
-import { Department } from "@/types";
-import DeletePopup from "@/components/DeletePopup/DeletePopup";
+import TrasnferPopup from "@/components/TrasnferPopup/TrasnferPopup";
 import useToggle from "@/hooks/useToggle";
+import { departmentService } from "@/services/departmentService";
+import { Department } from "@/types";
 
 interface Props {
   organizationId: string;
@@ -14,51 +16,80 @@ interface Props {
 
 function DepartmentPage({ organizationId }: Props) {
   const [departments, setDepartments] = React.useState<Department[]>([]);
-  const [isPopupOpen, togglePopup] = useToggle();
+  const [isConfirmPopupOpen, togglePopup] = useToggle();
+  const [isTransferPopupOpen, toggleTransferPopup] = useToggle();
   const [departmentId, setDepartmentId] = React.useState("");
-  console.log({ departments });
 
   React.useEffect(() => {
-    const data = departmentService.getDepartmentsById(organizationId);
-    setDepartments(data);
+    const departments = departmentService.getDepartmentsById(organizationId);
+    setDepartments(departments);
   }, [organizationId]);
 
-  //   const isDepartmentHasEmployees = departments.
-
-  const onConfirmDelete = () => {
-    const filteredDepartments = departments.filter(
-      department => department.id !== departmentId
+  const onHandleDelete = (id: string) => {
+    const selectedDepartment = departments.find(
+      department => department.id === id
     );
-    setDepartments(filteredDepartments);
+
+    if (!selectedDepartment?.employees.length) {
+      togglePopup();
+    } else {
+      toggleTransferPopup();
+    }
+  };
+
+  const onHandleConfirm = () => {
+    setDepartments(prev =>
+      prev.filter(department => department.id !== departmentId)
+    );
+    departmentService.removeDepartmentById(departmentId);
     togglePopup();
-    //TODO: Save to storage
-    // departmentService.setDepartments(filteredDepartments);
+    toast("Department has been deleted!");
   };
 
   const onOpenPopup = (id: string) => {
-    togglePopup();
     setDepartmentId(id);
+    onHandleDelete(id);
   };
 
   const onAddDepartment = (departmentName: string) => {
     const newDepartment: Department = {
+      organizationId,
       name: departmentName,
-      id: Math.random().toString(),
+      id: uuidv4(),
       employees: []
     };
     setDepartments(prev => [...prev, newDepartment]);
-    //TODO: Save to storage
+    departmentService.createDepartment(newDepartment);
+    toast(`Department with the name ${departmentName} has been added!`);
+  };
+  const onHandleDeleteEmployees = () => {
+    departmentService.deleteDepartmentEmployees(departmentId);
+    toggleTransferPopup();
+    toast(`All Employees have been deleted!`);
+  };
+
+  const onHandleTransferEmployees = (departmentToTransferId: string) => {
+    departmentService.transferEmployees(departmentToTransferId, departmentId);
+    toggleTransferPopup();
+    toast(`Employees Transfered Sucessfully`);
   };
 
   return (
     <section>
-      <DeletePopup
+      <ConfirmPopup
         togglePopup={togglePopup}
-        isPopupOpen={isPopupOpen}
-        onConfirmDelete={onConfirmDelete}
+        isOpen={isConfirmPopupOpen}
+        onConfirmDelete={onHandleConfirm}
+      />
+      <TrasnferPopup
+        departments={departments}
+        isOpen={isTransferPopupOpen}
+        toggleTransferPopup={toggleTransferPopup}
+        onTransferEmployees={onHandleTransferEmployees}
+        onDeleteEmployees={onHandleDeleteEmployees}
       />
       <DepartmentForm onAddDepartment={onAddDepartment} />
-      <DepartmentTable departments={departments} onOpenPopup={onOpenPopup} />
+      <DepartmentTable departments={departments} onHandleDelete={onOpenPopup} />
     </section>
   );
 }

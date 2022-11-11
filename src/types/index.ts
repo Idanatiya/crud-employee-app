@@ -4,18 +4,11 @@ export interface Organization {
 }
 
 export interface Department {
+  organizationId: string;
   id: string;
   name: string;
   employees: Employee[];
 }
-
-// export interface Departments {
-//   orginizationId: string;
-//   departments: Department[];
-// }
-
-// export type OrganizationDepartments = Record<string, Departments>;
-// export type Departmentes = Record<string, Department>;
 
 export interface Employee {
   id: string;
@@ -36,4 +29,5 @@ export interface Option {
 export interface EmployeeFormData {
   name: string;
   selectedDepartment: string;
+  id: string;
 }
